@@ -70,6 +70,10 @@ public class GodotAmazon extends Godot.SingletonBase {
 		});
 	}
 
+	public boolean isConnected() {
+		return inAppManager.isConnected();
+	}
+
 	protected void onMainActivityResult (int requestCode, int resultCode, Intent data) {
 		inAppManager.onActivityResult(requestCode, resultCode, data);
 	}

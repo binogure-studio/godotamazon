@@ -34,6 +34,7 @@ public class InAppManager extends GodotAmazonCommon {
 	private static final String CONSUMED = "CONSUMED";
 	private static final String REMAINING = "REMAINING";
 	private static final String TAG = "InAppManager";
+	private boolean is_connected = false;
 	private UserIapData userIapData;
 	private Dictionary mSkuDetails = new Dictionary();
 	private HashMap<Integer, String> hashCodes = new HashMap<Integer, String>();
@@ -62,6 +63,8 @@ public class InAppManager extends GodotAmazonCommon {
 
 		PurchasingService.registerListener(context, purchasingListener);
 		Log.d(TAG, "IS_SANDBOX_MODE: " + PurchasingService.IS_SANDBOX_MODE);
+
+		is_connected = true;
 	}
 
 	@Override
@@ -70,6 +73,10 @@ public class InAppManager extends GodotAmazonCommon {
 		PurchasingService.getUserData();
 		Log.d(TAG, "onResume: getPurchaseUpdates");
 		PurchasingService.getPurchaseUpdates(false);
+	}
+
+	public boolean isConnected() {
+		return is_connected;
 	}
 
 	// query in app item detail info
