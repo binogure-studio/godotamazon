@@ -35,7 +35,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 
 	public GodotAmazon(Activity p_activity) {
 		registerClass ("GodotAmazon", new String[] {
-			"setPurchaseCallbackId", "querySkuDetails", "purchase", "isConnected"
+			"setPurchaseCallbackId", "querySkuDetails", "purchase", "isConnected", "requestPurchased"
 		});
 
 		activity = p_activity;
@@ -66,6 +66,14 @@ public class GodotAmazon extends Godot.SingletonBase {
 		activity.runOnUiThread(new Runnable() {
 			public void run() {
 				inAppManager.purchase(sku);
+			}
+		});
+	}
+
+	public void requestPurchased() {
+		activity.runOnUiThread(new Runnable() {
+			public void run() {
+				inAppManager.requestPurchased();
 			}
 		});
 	}

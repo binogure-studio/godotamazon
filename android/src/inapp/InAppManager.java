@@ -29,7 +29,7 @@ import com.amazon.device.iap.model.RequestId;
 import com.amazon.device.iap.model.UserData;
 
 public class InAppManager extends GodotAmazonCommon {
-
+	private static String has_purchased = "has_purchased";
 	private static InAppManager mInstance = null;
 	private static final String TAG = "InAppManager";
 	private boolean is_connected = false;
@@ -149,19 +149,26 @@ public class InAppManager extends GodotAmazonCommon {
 		}
 	}
 
-	public void handleConsumablePurchase(final Receipt receipt, final UserData userData) {
+	public void handleConsumablePurchase(final Receipt receipt, final RequestId requestId, final UserData userData) {
 		try {
 			if (receipt.isCanceled()) {
 				purchaseCancelled();
 			} else {
 				// 'hashCode' validation
-				int hashCode = receipt.hashCode();
+				int hashCode = requestId.hashCode();
 				String sku = hashCodes.get(hashCode);
 
 				if (receipt.getSku().equals(sku)) {
+					PurchasingService.notifyFulfillment(receipt.getReceiptId(), FulfillmentResult.FULFILLED);
+
 					purchaseSuccess(receipt.getReceiptId(), String.valueOf(receipt.hashCode()), receipt.getSku());
+				} else if (InAppManager.has_purchased.equals(sku)) {
+					PurchasingService.notifyFulfillment(receipt.getReceiptId(), FulfillmentResult.FULFILLED);
+
+					hasPurchased(receipt.getReceiptId(), String.valueOf(receipt.hashCode()), receipt.getSku());
 				} else {
-					Log.e(TAG, "Cannot validate the purchase (invalid hashCode " + String.valueOf(receipt.hashCode()) + ", " + receipt.getSku() + ")");
+					Log.e(TAG, "Cannot validate the purchase (invalid hashCode " + sku + ", " + receipt.getSku() + ")");
+					PurchasingService.notifyFulfillment(receipt.getReceiptId(), FulfillmentResult.UNAVAILABLE);
 
 					purchaseFailed();
 				}
@@ -174,10 +181,16 @@ public class InAppManager extends GodotAmazonCommon {
 		}
 	}
 
-	public void handleReceipt(final Receipt receipt, final UserData userData) {
+	public void requestPurchased() {
+		RequestId requestId = PurchasingService.getPurchaseUpdates(false);
+
+		hashCodes.put(requestId.hashCode(), InAppManager.has_purchased);
+	}
+
+	public void handleReceipt(final Receipt receipt, final RequestId requestId, final UserData userData) {
 		switch (receipt.getProductType()) {
 		case CONSUMABLE:
-			handleConsumablePurchase(receipt, userData);
+			handleConsumablePurchase(receipt, requestId, userData);
 			break;
 		case ENTITLED:
 			Log.e(TAG, "Entitled are not implemented.");
@@ -205,6 +218,10 @@ public class InAppManager extends GodotAmazonCommon {
 		GodotLib.calldeferred(instance_id, "purchase_success", new Object[] { ticket, signature, sku });
 	}
 
+	public void hasPurchased(String ticket, String signature, String sku) {
+		GodotLib.calldeferred(instance_id, "has_purchased", new Object[] { ticket, signature, sku });
+	}
+
 	public UserIapData getUserIapData() {
 		return this.userIapData;
 	}
@@ -216,7 +233,7 @@ public class InAppManager extends GodotAmazonCommon {
 	public void purchase(final String sku) {
 		RequestId requestId = PurchasingService.purchase(sku);
 
-		Log.d(TAG, "Purchasing: " + sku + ", " + String.valueOf(requestId.hashCode()));
+		Log.d(TAG, "Purchasing: " + sku + ", " + requestId.hashCode());
 
 		hashCodes.put(requestId.hashCode(), sku);
 	}

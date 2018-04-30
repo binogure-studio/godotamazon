@@ -11,6 +11,7 @@ import com.amazon.device.iap.model.ProductDataResponse;
 import com.amazon.device.iap.model.PurchaseResponse;
 import com.amazon.device.iap.model.PurchaseUpdatesResponse;
 import com.amazon.device.iap.model.Receipt;
+import com.amazon.device.iap.model.RequestId;
 import com.amazon.device.iap.model.UserDataResponse;
 
 public class InAppPurchasingListener implements PurchasingListener {
@@ -72,7 +73,8 @@ public class InAppPurchasingListener implements PurchasingListener {
 
 	@Override
 	public void onPurchaseUpdatesResponse(final PurchaseUpdatesResponse response) {
-		Log.d(TAG, "onPurchaseUpdatesResponse: requestId (" + response.getRequestId()
+		final RequestId requestId = response.getRequestId();
+		Log.d(TAG, "onPurchaseUpdatesResponse: requestId (" + requestId
 					 + ") purchaseUpdatesResponseStatus ("
 					 + response.getRequestStatus()
 					 + ") userId ("
@@ -83,7 +85,7 @@ public class InAppPurchasingListener implements PurchasingListener {
 		case SUCCESSFUL:
 			inAppManager.setAmazonUserId(response.getUserData().getUserId(), response.getUserData().getMarketplace());
 			for (final Receipt receipt : response.getReceipts()) {
-				inAppManager.handleReceipt(receipt, response.getUserData());
+				inAppManager.handleReceipt(receipt, requestId, response.getUserData());
 			}
 			if (response.hasMore()) {
 				PurchasingService.getPurchaseUpdates(false);
@@ -101,7 +103,7 @@ public class InAppPurchasingListener implements PurchasingListener {
 
 	@Override
 	public void onPurchaseResponse(final PurchaseResponse response) {
-		final String requestId = response.getRequestId().toString();
+		final RequestId requestId = response.getRequestId();
 		final String userId = response.getUserData().getUserId();
 		final PurchaseResponse.RequestStatus status = response.getRequestStatus();
 		Log.d(TAG, "onPurchaseResponse: requestId (" + requestId
@@ -114,9 +116,10 @@ public class InAppPurchasingListener implements PurchasingListener {
 		switch (status) {
 		case SUCCESSFUL:
 			final Receipt receipt = response.getReceipt();
+
 			inAppManager.setAmazonUserId(response.getUserData().getUserId(), response.getUserData().getMarketplace());
 			Log.d(TAG, "onPurchaseResponse: receipt json:" + receipt.toJSON());
-			inAppManager.handleReceipt(receipt, response.getUserData());
+			inAppManager.handleReceipt(receipt, requestId, response.getUserData());
 			break;
 		case ALREADY_PURCHASED:
 			Log.d(TAG, "onPurchaseResponse: already purchased.");
