@@ -62,7 +62,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 		});
 	}
 
-	public void purchase(final String sku) {
+	public void purchase(final String sku, final String transaction_id) {
 		activity.runOnUiThread(new Runnable() {
 			public void run() {
 				inAppManager.purchase(sku);

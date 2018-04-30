@@ -60,6 +60,7 @@ public class InAppPurchasingListener implements PurchasingListener {
 			Log.d(TAG, "onProductDataResponse: " + unavailableSkus.size() + " unavailable skus");
 
 			inAppManager.addSkuDetail(response.getProductData());
+			inAppManager.completeSkuDetail();
 			break;
 		case FAILED:
 		case NOT_SUPPORTED:

@@ -31,8 +31,6 @@ import com.amazon.device.iap.model.UserData;
 public class InAppManager extends GodotAmazonCommon {
 
 	private static InAppManager mInstance = null;
-	private static final String CONSUMED = "CONSUMED";
-	private static final String REMAINING = "REMAINING";
 	private static final String TAG = "InAppManager";
 	private boolean is_connected = false;
 	private UserIapData userIapData;
@@ -65,6 +63,7 @@ public class InAppManager extends GodotAmazonCommon {
 		Log.d(TAG, "IS_SANDBOX_MODE: " + PurchasingService.IS_SANDBOX_MODE);
 
 		is_connected = true;
+		connected();
 	}
 
 	@Override
@@ -118,6 +117,10 @@ public class InAppManager extends GodotAmazonCommon {
 			mSkuDetails.put(item.get("product_id").toString(), item);
 		}
 
+	}
+
+	public void connected() {
+		GodotLib.calldeferred(instance_id, "connected", new Object[] { });
 	}
 
 	public void completeSkuDetail() {
