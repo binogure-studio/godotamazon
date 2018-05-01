@@ -12,7 +12,10 @@ Android amazon services for Godot Engine 2.1, including:
    * Query SKU details
    * Purchase
 * Amazon Game Circle
-   * WIP
+   * Authentication
+   * Whispersync (cloud save)
+   * Achievements
+   * Leaderboard (WIP)
 
 # Usage
 
