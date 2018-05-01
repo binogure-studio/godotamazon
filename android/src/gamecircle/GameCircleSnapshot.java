@@ -103,6 +103,8 @@ public class GameCircleSnapshot extends GodotAmazonCommon {
 			String data = savegame.getValue();
 
 			GodotLib.calldeferred(instance_id, "amazon_snapshot_loaded", new Object[] { data });
+		} else {
+			GodotLib.calldeferred(instance_id, "amazon_snapshot_loaded", new Object[] { "" });
 		}
 
 		whispersyncClient.synchronize();
