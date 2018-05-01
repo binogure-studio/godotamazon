@@ -78,14 +78,11 @@ public class GameCircleLeaderboards extends GodotAmazonCommon {
 
 								if (displayName == null) {
 									displayName = "Unkown player";
-								} else {
-									leaderboard_result.put(String.valueOf(leaderboardScore.getRank()) + ":photo_path", "user://" + displayName + ".png");
-
-									// TODO copy user picture locally
-									// googlePlayer.copy_user_picture(leaderboardScore.getScoreHolderIconImageUri(), displayName + ".png");
+									avatarUrl = "null";
 								}
 
 								leaderboard_result.put(String.valueOf(leaderboardScore.getRank()) + ":score", leaderboardScore.getScoreValue());
+								leaderboard_result.put(String.valueOf(leaderboardScore.getRank()) + ":photo_uri", avatarUrl);
 								leaderboard_result.put(String.valueOf(leaderboardScore.getRank()) + ":name", displayName);
 							}
 						} catch (JSONException e) {
