@@ -63,7 +63,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 			"amazon_initialize", "amazon_connect", "amazon_is_connected", "amazon_get_user_details", "amazon_disconnect",
 
 			// GameCircleSnapshot
-			"amazon_snapshot_load", "amazon_amazon_snapshot_save",
+			"amazon_snapshot_load", "amazon_snapshot_save",
 
 			// GameCircleAchievement
 			"amazon_achievement_show_list", "amazon_achievement_unlock", "amazon_achievement_increment",
