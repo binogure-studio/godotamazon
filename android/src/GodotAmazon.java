@@ -19,6 +19,8 @@ import com.godot.game.BuildConfig;
 import org.godotengine.godot.GodotLib;
 
 import org.godotengine.godot.inapp.InAppManager;
+import org.godotengine.godot.gamecircle.GameCircleClient;
+import org.godotengine.godot.gamecircle.GameCircleSnapshot;
 import org.godotengine.godot.Dictionary;
 
 public class GodotAmazon extends Godot.SingletonBase {
@@ -28,14 +30,22 @@ public class GodotAmazon extends Godot.SingletonBase {
 	private static Activity activity;
 
 	private InAppManager inAppManager;
-
+	private GameCircleClient gameCircleClient;
+	private GameCircleSnapshot gameCircleSnapshot;
+	
 	static public Godot.SingletonBase initialize (Activity p_activity) {
 		return new GodotAmazon(p_activity);
 	}
 
 	public GodotAmazon(Activity p_activity) {
 		registerClass ("GodotAmazon", new String[] {
-			"setPurchaseCallbackId", "querySkuDetails", "purchase", "isConnected", "requestPurchased"
+			"setPurchaseCallbackId", "querySkuDetails", "purchase", "isConnected", "requestPurchased",
+
+			// GameCircleClient
+			"amazon_initialize", "amazon_connect", "amazon_is_connected",
+
+			// GameCircleSnapshot
+			"amazon_snapshot_load", "amazon_amazon_snapshot_save"
 		});
 
 		activity = p_activity;
@@ -43,8 +53,41 @@ public class GodotAmazon extends Godot.SingletonBase {
 
 		// Initiliaze singletons here
 		inAppManager = InAppManager.getInstance(activity);
+
+		// Order matters
+		gameCircleClient = GameCircleClient.getInstance(activity);
+		gameCircleSnapshot = GameCircleSnapshot.getInstance(activity);
 	}
 
+	public void amazon_initialize(final int instance_id) {
+		activity.runOnUiThread(new Runnable() {
+			public void run() {
+				gameCircleClient.init(instance_id);
+				gameCircleSnapshot.init(instance_id);
+			}
+		});
+	}
+
+	// Amazon snapshots
+	public void amazon_snapshot_load(final String snapshotName, final int conflictResolutionPolicy) {
+		gameCircleSnapshot.snapshot_load(snapshotName, conflictResolutionPolicy);
+	}
+
+	public void amazon_snapshot_save(final String snapshotName, final String data, final String description, final boolean flag_force) {
+		gameCircleSnapshot.snapshot_save(snapshotName, data, description, flag_force);
+	}
+
+	public void amazon_connect() {
+		activity.runOnUiThread(new Runnable() {
+			public void run() {
+				gameCircleClient.connect();
+			}
+		});
+	}
+
+	public boolean amazon_is_connected() {
+		return gameCircleClient.isConnected();
+	}
 
 	public void setPurchaseCallbackId(final int instance_id) {
 		activity.runOnUiThread(new Runnable() {
@@ -84,17 +127,25 @@ public class GodotAmazon extends Godot.SingletonBase {
 
 	protected void onMainActivityResult (int requestCode, int resultCode, Intent data) {
 		inAppManager.onActivityResult(requestCode, resultCode, data);
+		gameCircleClient.onActivityResult(requestCode, resultCode, data);
+		gameCircleSnapshot.onActivityResult(requestCode, resultCode, data);
 	}
 
 	protected void onMainPause () {
 		inAppManager.onPause();
+		gameCircleClient.onPause();
+		gameCircleSnapshot.onPause();
 	}
 
 	protected void onMainResume () {
 		inAppManager.onResume();
+		gameCircleClient.onResume();
+		gameCircleSnapshot.onResume();
 	}
 
 	protected void onMainDestroy () {
 		inAppManager.onStop();
+		gameCircleClient.onStop();
+		gameCircleSnapshot.onStop();
 	}
 }

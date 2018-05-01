@@ -11,6 +11,8 @@ public class GodotAmazonCommon {
 
 	public void init(final int p_instance_id) {
 		this.instance_id = p_instance_id;
+
+		onStart();
 	}
 
 	public void onStart() {

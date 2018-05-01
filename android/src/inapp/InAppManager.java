@@ -50,8 +50,6 @@ public class InAppManager extends GodotAmazonCommon {
 	public InAppManager(Activity activity) {
 		this.activity = activity;
 		this.context = activity.getApplicationContext();
-
-		onStart();
 	}
 
 	@Override
@@ -63,6 +61,7 @@ public class InAppManager extends GodotAmazonCommon {
 		Log.d(TAG, "IS_SANDBOX_MODE: " + PurchasingService.IS_SANDBOX_MODE);
 
 		is_connected = true;
+
 		connected();
 	}
 
