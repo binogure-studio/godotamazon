@@ -25,6 +25,7 @@ import org.godotengine.godot.gamecircle.GameCircleClient;
 import org.godotengine.godot.gamecircle.GameCircleSnapshot;
 import org.godotengine.godot.gamecircle.GameCircleAchievements;
 import org.godotengine.godot.gamecircle.GameCircleLeaderboards;
+import org.godotengine.godot.gamecircle.GameCircleAuthentication;
 import org.godotengine.godot.Dictionary;
 
 public class GodotAmazon extends Godot.SingletonBase {
@@ -38,6 +39,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 	private GameCircleSnapshot gameCircleSnapshot;
 	private GameCircleAchievements gameCircleAchievements;
 	private GameCircleLeaderboards gameCircleLeaderboards;
+	private GameCircleAuthentication gameCircleAuthentication;
 	
 	public static final Dictionary AMAZON_LEADERBOARD_TIMESPAN;
 
@@ -58,7 +60,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 			"setPurchaseCallbackId", "querySkuDetails", "purchase", "isConnected", "requestPurchased",
 
 			// GameCircleClient
-			"amazon_initialize", "amazon_connect", "amazon_is_connected",
+			"amazon_initialize", "amazon_connect", "amazon_is_connected", "amazon_get_user_details", "amazon_disconnect",
 
 			// GameCircleSnapshot
 			"amazon_snapshot_load", "amazon_amazon_snapshot_save",
@@ -81,6 +83,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 		gameCircleSnapshot = GameCircleSnapshot.getInstance(activity);
 		gameCircleAchievements = GameCircleAchievements.getInstance(activity);
 		gameCircleLeaderboards = GameCircleLeaderboards.getInstance(activity);
+		gameCircleAuthentication = GameCircleAuthentication.getInstance(activity);
 	}
 
 	public Dictionary get_amazon_leaderboard_timespan() {
@@ -94,6 +97,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 				gameCircleSnapshot.init(instance_id);
 				gameCircleAchievements.init(instance_id);
 				gameCircleLeaderboards.init(instance_id);
+				gameCircleAuthentication.init(instance_id);
 			}
 		});
 	}
@@ -157,13 +161,25 @@ public class GodotAmazon extends Godot.SingletonBase {
 	public void amazon_connect() {
 		activity.runOnUiThread(new Runnable() {
 			public void run() {
-				gameCircleClient.connect();
+				gameCircleAuthentication.signIn();
 			}
 		});
 	}
 
+	public void amazon_disconnect() {
+		activity.runOnUiThread(new Runnable() {
+			public void run() {
+				gameCircleAuthentication.signOut();
+			}
+		});
+	}
+
+	public String amazon_get_user_details() {
+		return gameCircleAuthentication.getCurrentPlayer().toString();
+	}
+
 	public boolean amazon_is_connected() {
-		return gameCircleClient.isConnected();
+		return gameCircleAuthentication.isSignedIn();
 	}
 
 	public void setPurchaseCallbackId(final int instance_id) {
@@ -206,6 +222,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 		inAppManager.onActivityResult(requestCode, resultCode, data);
 
 		gameCircleClient.onActivityResult(requestCode, resultCode, data);
+		gameCircleAuthentication.onActivityResult(requestCode, resultCode, data);
 		gameCircleSnapshot.onActivityResult(requestCode, resultCode, data);
 		gameCircleAchievements.onActivityResult(requestCode, resultCode, data);
 		gameCircleLeaderboards.onActivityResult(requestCode, resultCode, data);
@@ -215,6 +232,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 		inAppManager.onPause();
 
 		gameCircleClient.onPause();
+		gameCircleAuthentication.onPause();
 		gameCircleSnapshot.onPause();
 		gameCircleAchievements.onPause();
 		gameCircleLeaderboards.onPause();
@@ -224,6 +242,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 		inAppManager.onResume();
 
 		gameCircleClient.onResume();
+		gameCircleAuthentication.onResume();
 		gameCircleSnapshot.onResume();
 		gameCircleAchievements.onResume();
 		gameCircleLeaderboards.onResume();
@@ -233,6 +252,7 @@ public class GodotAmazon extends Godot.SingletonBase {
 		inAppManager.onStop();
 
 		gameCircleClient.onStop();
+		gameCircleAuthentication.onStop();
 		gameCircleSnapshot.onStop();
 		gameCircleAchievements.onStop();
 		gameCircleLeaderboards.onStop();

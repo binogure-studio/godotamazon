@@ -19,6 +19,8 @@ import com.amazon.ags.api.AmazonGamesClient;
 import com.amazon.ags.api.AmazonGamesFeature;
 import com.amazon.ags.api.AmazonGamesStatus;
 import com.amazon.ags.api.overlay.PopUpLocation;
+import com.amazon.ags.api.player.PlayerClient;
+import com.amazon.ags.api.player.AGSignedInListener;
 
 public class GameCircleClient extends GodotAmazonCommon {
 	private static GameCircleClient mInstance = null;
@@ -43,6 +45,8 @@ public class GameCircleClient extends GodotAmazonCommon {
 		this.activity = activity;
 		this.context = activity.getApplicationContext();
 
+		final GameCircleAuthentication gameCircleAuthentication = GameCircleAuthentication.getInstance(activity);
+
 		amazonGamesCallback = new AmazonGamesCallback() {
 			@Override
 			public void onServiceNotReady(AmazonGamesStatus status) {
@@ -50,7 +54,6 @@ public class GameCircleClient extends GodotAmazonCommon {
 
 				mClient = null;
 				isConnected = false;
-				GodotLib.calldeferred(instance_id, "amazon_auth_connect_failed", new Object[]{ String.valueOf(status) });
 			}
 
 			@Override
@@ -59,7 +62,23 @@ public class GameCircleClient extends GodotAmazonCommon {
 				isConnected = true;
 
 				mClient.setPopUpLocation(PopUpLocation.TOP_CENTER);
-				GodotLib.calldeferred(instance_id, "amazon_auth_connected", new Object[]{ });
+
+				PlayerClient playerClient = mClient.getPlayerClient();
+				AGSignedInListener agSignedInListener = new AGSignedInListener() {
+					@Override
+					public void onSignedInStateChange(boolean isSignedIn) {
+						
+
+						if (isSignedIn) {
+							gameCircleAuthentication.onConnected();
+						} else {
+							gameCircleAuthentication.onDisconnected();
+						}
+					}
+				};
+
+				// Register the listener for the player
+				playerClient.setSignedInListener(agSignedInListener);
 			}
 		};
 	}
@@ -86,8 +105,6 @@ public class GameCircleClient extends GodotAmazonCommon {
 			AmazonGamesClient.initialize(activity, amazonGamesCallback, mFeatures);
 		} else {
 			isConnected = true;
-
-			GodotLib.calldeferred(instance_id, "amazon_auth_connected", new Object[]{ });
 		}
 	}
 

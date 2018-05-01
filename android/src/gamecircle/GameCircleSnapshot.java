@@ -26,10 +26,7 @@ public class GameCircleSnapshot extends GodotAmazonCommon {
 	private WhispersyncClient whispersyncClient = null;
 	private GameDataMap gameDataMap;
 	private String snapshotNameToLoad;
-	private String snapshotNameToSave;
-	private boolean listenToSave = false;
-	private boolean listenToLoad = false;
-
+	
 	public static GameCircleSnapshot getInstance(Activity activity) {
 		synchronized (GameCircleSnapshot.class) {
 			if (mInstance == null) {
@@ -52,11 +49,9 @@ public class GameCircleSnapshot extends GodotAmazonCommon {
 
 		whispersyncClient.setWhispersyncEventListener(new WhispersyncEventListener() {
 			public void onNewCloudData() {
-				Log.d(TAG, "Data loaded from the cloud (Processing? " + listenToLoad + ")");
+				Log.d(TAG, "Data loaded from the cloud (" + snapshotNameToLoad + ")");
 
-				if (listenToLoad) {
-					listenToLoad = false;
-
+				if (snapshotNameToLoad != null) {
 					SyncableDeveloperString savegame = gameDataMap.getDeveloperString(snapshotNameToLoad);
 
 					if (savegame.inConflict()) {
@@ -78,13 +73,9 @@ public class GameCircleSnapshot extends GodotAmazonCommon {
 			}
 
 			public void onDataUploadedToCloud() {
-				Log.d(TAG, "Data uploaded to the cloud (Processing? " + listenToSave + ")");
+				Log.d(TAG, "Data uploaded to the cloud");
 
-				if (listenToSave) {
-					listenToSave = false;
-
-					GodotLib.calldeferred(instance_id, "amazon_snapshot_saved", new Object[] { });
-				}
+				GodotLib.calldeferred(instance_id, "amazon_snapshot_saved", new Object[] { });
 			}
 
 			public void onThrottled() {
@@ -112,16 +103,12 @@ public class GameCircleSnapshot extends GodotAmazonCommon {
 			String data = savegame.getValue();
 
 			GodotLib.calldeferred(instance_id, "amazon_snapshot_loaded", new Object[] { data });
-		} else {
-			listenToLoad = true;
 		}
 
 		whispersyncClient.synchronize();
 	}
 
 	public void snapshot_save(final String snapshotName, final String data, final String description, final boolean force) {
-		snapshotNameToSave = snapshotName;
-
 		SyncableDeveloperString savegame = gameDataMap.getDeveloperString(snapshotName);
 
 		savegame.setValue(data);
@@ -129,8 +116,6 @@ public class GameCircleSnapshot extends GodotAmazonCommon {
 		// Resolve conflicts
 		if (savegame.inConflict()) {
 			if (force) {
-				listenToSave = true;
-
 				savegame.markAsResolved();
 
 				whispersyncClient.synchronize();
@@ -141,8 +126,6 @@ public class GameCircleSnapshot extends GodotAmazonCommon {
 				GodotLib.calldeferred(instance_id, "amazon_snapshot_save_failed", new Object[] { message });
 			}
 		} else {
-			listenToSave = true;
-
 			whispersyncClient.synchronize();
 		}
 	}
