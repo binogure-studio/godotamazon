@@ -107,7 +107,13 @@ func amazon_connect():
 
 # API
 
-## Functions
+## Amazon In App purchase
+
+GodotPayments and GodotAmazon expose the very same API ([documentation](http://docs.godotengine.org/en/3.0/tutorials/platform/android_in_app_purchases.html)).
+
+## Amazon Game Circle
+
+### Functions
 
 |name|parameters|return|description|
 |---|---|---|---|
@@ -129,7 +135,7 @@ func amazon_connect():
 |`amazon_achievement_show_list`||`void`|Show the achievement list|
 |`amazon_get_user_details`||`String`|Return the current firebase user. Need to `parse_json` in order to exploit it.|
 
-## Callbacks
+### Callbacks
 
 |name|parameters|description|
 |---|---|---|
