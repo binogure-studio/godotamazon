@@ -1,12 +1,14 @@
 package org.godotengine.godot.inapp;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import android.util.Log;
 
 import com.amazon.device.iap.PurchasingListener;
 import com.amazon.device.iap.PurchasingService;
+import com.amazon.device.iap.model.Product;
 import com.amazon.device.iap.model.ProductDataResponse;
 import com.amazon.device.iap.model.PurchaseResponse;
 import com.amazon.device.iap.model.PurchaseUpdatesResponse;
@@ -58,9 +60,10 @@ public class InAppPurchasingListener implements PurchasingListener {
 		case SUCCESSFUL:
 			Log.d(TAG, "onProductDataResponse: successful.	The item data map in this response includes the valid SKUs");
 			final Set<String> unavailableSkus = response.getUnavailableSkus();
-			Log.d(TAG, "onProductDataResponse: " + unavailableSkus.size() + " unavailable skus");
+			final Map<String, Product> productDatas = response.getProductData();
+			Log.d(TAG, "onProductDataResponse: " + unavailableSkus.size() + " unavailable skus, " + productDatas.size() + " valid skus");
 
-			inAppManager.addSkuDetail(response.getProductData());
+			inAppManager.addSkuDetail(productDatas);
 			inAppManager.completeSkuDetail();
 			break;
 		case FAILED:
