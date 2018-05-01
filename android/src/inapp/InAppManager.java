@@ -67,10 +67,13 @@ public class InAppManager extends GodotAmazonCommon {
 
 	@Override
 	public void onResume() {
-		Log.d(TAG, "onResume: call getUserData");
-		PurchasingService.getUserData();
-		Log.d(TAG, "onResume: getPurchaseUpdates");
-		PurchasingService.getPurchaseUpdates(false);
+		if (isConnected()) {
+			Log.d(TAG, "onResume: call getUserData");
+			PurchasingService.getUserData();
+
+			Log.d(TAG, "onResume: getPurchaseUpdates");
+			PurchasingService.getPurchaseUpdates(false);
+		}
 	}
 
 	public boolean isConnected() {
