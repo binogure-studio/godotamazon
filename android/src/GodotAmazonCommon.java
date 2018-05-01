@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 
 public class GodotAmazonCommon {
-	protected static int instance_id;
-	protected static Activity activity = null;
-	protected static Context context = null;
+	protected int instance_id;
+	protected Activity activity = null;
+	protected Context context = null;
 
 	public void init(final int p_instance_id) {
 		this.instance_id = p_instance_id;
