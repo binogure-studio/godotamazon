@@ -67,8 +67,6 @@ public class GameCircleClient extends GodotAmazonCommon {
 				AGSignedInListener agSignedInListener = new AGSignedInListener() {
 					@Override
 					public void onSignedInStateChange(boolean isSignedIn) {
-						
-
 						if (isSignedIn) {
 							gameCircleAuthentication.onConnected();
 						} else {
@@ -79,6 +77,11 @@ public class GameCircleClient extends GodotAmazonCommon {
 
 				// Register the listener for the player
 				playerClient.setSignedInListener(agSignedInListener);
+
+				// If user is already signed in
+				if (playerClient.isSignedIn()) {
+					gameCircleAuthentication.onConnected();
+				}
 			}
 		};
 	}
