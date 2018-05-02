@@ -27,7 +27,7 @@ Open `/res/values/ids.xml` and update the following:
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-	<string name="amazon_application_id">wYOUR APPLICATION ID HERE</string>
+	<string name="amazon_application_id">YOUR APPLICATION ID HERE</string>
 </resources>
 ```
 
