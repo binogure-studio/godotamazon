@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import com.amazon.ags.api.leaderboards.GetPlayerScoreResponse;
+import com.amazon.ags.api.AmazonGamesClient;
 import com.amazon.ags.api.leaderboards.LeaderboardsClient;
 import com.amazon.ags.api.AGResponseHandle;
 import com.amazon.ags.api.AGResponseCallback;
@@ -52,7 +53,7 @@ public class GameCircleLeaderboards extends GodotAmazonCommon {
 		LeaderboardsClient leaderboardsClient = null;
 
 		if (amazonGamesClient != null) {
-			leaderboardsClient = leaderboardsClient.getPlayerClient();
+			leaderboardsClient = amazonGamesClient.getLeaderboardsClient();
 		}
 
 		return leaderboardsClient;
