@@ -39,10 +39,16 @@ public class GameCircleAchievements extends GodotAmazonCommon {
 		this.context = activity.getApplicationContext();
 	}
 
-	private AchievementsClient getAchievementClient() {
+	private PlayerClient getAchievementClient() {
 		GameCircleClient gameCircleClient = GameCircleClient.getInstance(activity);
+		AmazonGamesClient amazonGamesClient = gameCircleClient.getAmazonGamesClient();
+		AchievementsClient achievementsClient = null;
 
-		return gameCircleClient.getAmazonGamesClient().getAchievementsClient();
+		if (amazonGamesClient != null) {
+			achievementsClient = amazonGamesClient.getPlayerClient();
+		}
+
+		return achievementsClient;
 	}
 
 	public void unlockAchievement(final String id) {

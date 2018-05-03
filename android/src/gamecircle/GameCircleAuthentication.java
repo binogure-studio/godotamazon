@@ -50,9 +50,14 @@ public class GameCircleAuthentication extends GodotAmazonCommon {
 	}
 
 	private PlayerClient getPlayerClient() {
-		GameCircleClient gameCircleClient = GameCircleClient.getInstance(activity);
+		AmazonGamesClient amazonGamesClient = getAmazonGamesClient();
+		PlayerClient playerClient = null;
 
-		return gameCircleClient.getAmazonGamesClient().getPlayerClient(); 
+		if (amazonGamesClient != null) {
+			playerClient = amazonGamesClient.getPlayerClient();
+		}
+
+		return playerClient;
 	}
 
 	public boolean isSignedIn() {

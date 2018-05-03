@@ -48,8 +48,14 @@ public class GameCircleLeaderboards extends GodotAmazonCommon {
 
 	private LeaderboardsClient getLeaderboardClient() {
 		GameCircleClient gameCircleClient = GameCircleClient.getInstance(activity);
+		AmazonGamesClient amazonGamesClient = gameCircleClient.getAmazonGamesClient();
+		LeaderboardsClient leaderboardsClient = null;
 
-		return gameCircleClient.getAmazonGamesClient().getLeaderboardsClient();
+		if (amazonGamesClient != null) {
+			leaderboardsClient = leaderboardsClient.getPlayerClient();
+		}
+
+		return leaderboardsClient;
 	}
 
 	public void getTopScores(final String id, final LeaderboardFilter time_span, final int amount) {
