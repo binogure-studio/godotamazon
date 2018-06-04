@@ -86,7 +86,7 @@ Here is an example
 ```python
 extends Node
 
-onready var godot_amazon = Globals.get_singleton('GodotAamazon')
+onready var godot_amazon = Globals.get_singleton('GodotAmazon')
 
 func _ready():
   if OS.get_name() == 'Android' and godot_amazon != null:
